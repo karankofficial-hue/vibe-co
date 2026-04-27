@@ -63,9 +63,18 @@ app.get('/admin/vault', async (req, res) => {
             <tr><th>Date</th><th>Time</th><th>Alias</th><th>Contact</th><th>NGF Tag</th></tr>`;
 
     bookings.forEach(b => {
-        const d = new Date(b.createdAt);
-        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+const d = new Date(b.createdAt);
+        const dateStr = d.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            timeZone: 'Asia/Kolkata' 
+        });
+        const timeStr = d.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true, 
+            timeZone: 'Asia/Kolkata' 
+        });
 
         html += `<tr>
             <td>${dateStr}</td>
