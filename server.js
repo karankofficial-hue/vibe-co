@@ -79,3 +79,8 @@ app.get('/admin/vault', async (req, res) => {
     html += `</table></body></html>`;
     res.send(html);
 });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Privacy Vault Connected`);
+    console.log(`VIBE & CO. Live on port ${PORT}`);
+});
