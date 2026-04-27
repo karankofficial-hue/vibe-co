@@ -26,9 +26,13 @@
 
 <section class="relative h-[85vh] flex items-center justify-center text-center px-6">
     <div class="relative z-10 max-w-4xl">
-        <h1 class="serif text-6xl md:text-8xl text-white tracking-tighter mb-6">
-            VIBE & CO. <span class="text-[#c5a059]">|</span> Private Concierge
-        </h1>
+<h1 class="serif text-6xl md:text-8xl text-white tracking-tighter mb-6 flex items-center justify-center">
+    VIBE & CO. <span class="text-[#c5a059] mx-2">|</span> Private Concierge
+    <span class="flex h-3 w-3 ml-4">
+        <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+    </span>
+</h1>
         <p class="text-gray-400 text-sm md:text-lg tracking-[0.3em] uppercase mb-10 leading-relaxed">
             Curated companionship for the modern elite. <br>
             <span class="text-[#c5a059] italic lowercase font-serif normal-case text-xl tracking-normal">Discretion is our highest currency.</span>
@@ -59,7 +63,38 @@
             </div>
         </template>
     </section>
+<section class="py-24 px-10 max-w-5xl mx-auto border-t border-white/5">
+    <div class="text-center mb-16">
+        <h2 class="serif text-4xl text-white mb-4 italic">The Private Protocol</h2>
+        <p class="text-gray-500 text-xs tracking-[0.4em] uppercase">Engineered for absolute discretion</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+        <div class="group">
+            <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">01</div>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Identity Protection</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">We do not store personal profiles. Your unique <span class="text-[#c5a059]">NGF-Tag</span> is your only identifier, generated fresh for every reservation to ensure total anonymity.</p>
+        </div>
 
+        <div class="group">
+            <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">02</div>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Ephemeral Vault</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">Our digital infrastructure is temporary. All booking metadata and contact logs are <span class="text-[#c5a059]">permanently shredded</span> every 24 hours. No digital footprint remains.</p>
+        </div>
+
+        <div class="group">
+            <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">03</div>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Secure Verification</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">Verification occurs exclusively through encrypted direct channels. No public logs are ever created, maintaining the highest standard of social privacy.</p>
+        </div>
+
+        <div class="group">
+            <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">04</div>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Elite Vetting</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">Vibe & Co. operates on a curation-first model. Every request is manually reviewed to ensure our community maintains its prestigious standards.</p>
+        </div>
+    </div>
+</section>
     <div x-show="bookingModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm">
         <div @click.away="bookingModal = false" class="glass max-w-md w-full p-10 rounded-[3rem] text-center">
             <h2 class="serif text-3xl mb-6 text-white">Request <span class="italic">Identity</span></h2>

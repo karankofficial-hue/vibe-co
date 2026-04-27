@@ -47,22 +47,29 @@ app.get('/admin/vault', async (req, res) => {
     const bookings = await Booking.find().sort({ createdAt: -1 });
     let html = `
     <html>
-    <head><style>
-        body { background: #0a0e14; color: white; font-family: sans-serif; padding: 40px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #c5a059; padding: 15px; text-align: left; }
-        th { background: #c5a059; color: black; }
-        .tag { font-family: serif; font-weight: bold; color: #c5a059; }
-    </style></head>
+    <head>
+        <style>
+            body { background: #0a0e14; color: white; font-family: sans-serif; padding: 40px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #c5a059; padding: 15px; text-align: left; }
+            th { background: #c5a059; color: black; }
+            .tag { font-family: serif; font-weight: bold; color: #c5a059; }
+        </style>
+    </head>
     <body>
         <h1>VIBE & CO. | Private Booking Vault</h1>
         <p>Data shreds automatically after 24 hours.</p>
         <table>
-            <tr><th>Time</th><th>Alias</th><th>Contact</th><th>NGF Tag</th></tr>`;
-    
+            <tr><th>Date</th><th>Time</th><th>Alias</th><th>Contact</th><th>NGF Tag</th></tr>`;
+
     bookings.forEach(b => {
+        const d = new Date(b.createdAt);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
         html += `<tr>
-            <td>${b.createdAt.toLocaleTimeString()}</td>
+            <td>${dateStr}</td>
+            <td>${timeStr}</td>
             <td>${b.alias}</td>
             <td>${b.contact}</td>
             <td class="tag">${b.ngfTag}</td>
@@ -72,5 +79,3 @@ app.get('/admin/vault', async (req, res) => {
     html += `</table></body></html>`;
     res.send(html);
 });
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 VIBE & CO. Live at http://localhost:${PORT}`)); // SECRET ADMIN VIEW
