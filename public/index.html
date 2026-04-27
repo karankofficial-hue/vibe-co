@@ -24,19 +24,27 @@
         <button @click="bookingModal = true" class="bg-gradient-to-r from-[#c5a059] to-[#f1d392] text-black px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest">Reserve Entry</button>
     </nav>
 
-    <section class="relative h-[80vh] flex items-center justify-center text-center px-6">
-        <div class="relative z-10 max-w-4xl">
-            <h1 class="serif text-6xl md:text-8xl mb-6">Chemistry <span class="italic gold-gradient">First.</span></h1>
-            <p class="text-gray-400 text-sm tracking-widest uppercase mb-10">Premium Companionship • No Prepayment • NGF Secure</p>
-            <button @click="bookingModal = true" class="border border-[#c5a059] text-[#c5a059] px-12 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-[#c5a059] hover:text-black transition-all">Explore the Collection</button>
-        </div>
+<section class="relative h-[85vh] flex items-center justify-center text-center px-6">
+    <div class="relative z-10 max-w-4xl">
+        <h1 class="serif text-6xl md:text-8xl text-white tracking-tighter mb-6">
+            VIBE & CO. <span class="text-[#c5a059]">|</span> Private Concierge
+        </h1>
+        <p class="text-gray-400 text-sm md:text-lg tracking-[0.3em] uppercase mb-10 leading-relaxed">
+            Curated companionship for the modern elite. <br>
+            <span class="text-[#c5a059] italic lowercase font-serif normal-case text-xl tracking-normal">Discretion is our highest currency.</span>
+        </p>
+        <button @click="bookingModal = true" class="border border-[#c5a059] text-[#c5a059] px-12 py-4 rounded-full font-bold tracking-widest uppercase hover:bg-[#c5a059] hover:text-black transition-all duration-500 active:scale-95">
+            Request Private Access
+        </button>
+    </div>
+</section>
     </section>
 
     <section class="py-20 px-10 max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
         <template x-for="item in [
-            {name: 'The Sophisticate', type: 'Elite Date', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'},
-            {name: 'The Healer', type: 'Wellness', img: 'https://images.unsplash.com/photo-1540555700478-4be289fbecee?w=800'},
-            {name: 'The Vibe-Setter', type: 'Toy Boy', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=800'}
+{ name: 'Elite Social', type: 'Event Companion', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d' },
+{ name: 'Private Travel', type: 'Global Concierge', img: 'https://images.unsplash.com/photo-1485557004724-149256200632' },
+{ name: 'Lifestyle Protocol', type: 'Secure Access', img: 'https://images.unsplash.com/photo-1522335789553-40a1b0213f00' }
         ]">
             <div class="glass rounded-[2rem] overflow-hidden group">
                 <div class="h-96 relative overflow-hidden">
