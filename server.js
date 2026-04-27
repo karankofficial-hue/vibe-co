@@ -36,7 +36,13 @@ app.post('/api/reserve', async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
+// Serve the front-end files
+app.use(express.static('public'));
 
+// The "Home" route
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});
 app.get('/admin/vault', async (req, res) => {
     const bookings = await Booking.find().sort({ createdAt: -1 });
     let html = `
