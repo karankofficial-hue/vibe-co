@@ -71,6 +71,7 @@
         </template>
     </section>
 
+<!-- UPDATED: THE PRIVATE PROTOCOL SECTION -->
 <section class="py-24 px-10 max-w-5xl mx-auto border-t border-white/5 fade-in">
     <div class="text-center mb-16">
         <h2 class="serif text-4xl text-white mb-4 italic">The Private Protocol</h2>
@@ -80,37 +81,44 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
         <div class="group">
             <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">01</div>
-            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Identity Protection</h4>
-            <p class="text-gray-500 text-sm leading-relaxed font-light">We do not store personal profiles. Your unique <span class="text-[#c5a059]">NGF-Tag</span> is your only identifier, generated fresh for every reservation to ensure total anonymity.</p>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Identity Masking</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">We do not store public profiles. Your unique <span class="text-[#c5a059]">NGF-Tag</span> acts as a cryptographic shield, ensuring your real identity is never exposed during the curation process.</p>
         </div>
 
         <div class="group">
             <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">02</div>
-            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Ephemeral Vault</h4>
-            <p class="text-gray-500 text-sm leading-relaxed font-light">Our digital infrastructure is temporary. All booking metadata and contact logs are <span class="text-[#c5a059]">permanently shredded</span> every 24 hours. No digital footprint remains.</p>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Encrypted Vault</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">All communication metadata is transitioned to an <span class="text-[#c5a059]">Offline Encrypted Vault</span> within 24 hours. No active digital footprint remains on the public-facing server.</p>
         </div>
 
         <div class="group">
             <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">03</div>
-            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Secure Verification</h4>
-            <p class="text-gray-500 text-sm leading-relaxed font-light">Verification occurs exclusively through encrypted direct channels. No public logs are ever created, maintaining the highest standard of social privacy.</p>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Discrete Verification</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">Verification occurs exclusively through end-to-end encrypted direct channels. We maintain a zero-log policy for social interactions to protect your prestige.</p>
         </div>
 
         <div class="group">
             <div class="text-[#c5a059] font-serif text-xl mb-4 opacity-50 group-hover:opacity-100 transition">04</div>
-            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Elite Vetting</h4>
-            <p class="text-gray-500 text-sm leading-relaxed font-light">Vibe & Co. operates on a curation-first model. Every request is manually reviewed to ensure our community maintains its prestigious standards.</p>
+            <h4 class="text-white font-bold text-sm uppercase tracking-widest mb-3">Elite Curation</h4>
+            <p class="text-gray-500 text-sm leading-relaxed font-light">Vibe & Co. operates on a manual review model. Every request is vetted by a private concierge to ensure the highest standards of safety and exclusivity.</p>
         </div>
     </div>
 </section>
 
+    <!-- UPDATED: BOOKING MODAL WITH LOCK ICONS AND SECURITY LANGUAGE -->
     <div x-show="bookingModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm">
         <div @click.away="bookingModal = false" class="glass max-w-md w-full p-10 rounded-[3rem] text-center">
-            <h2 class="serif text-3xl mb-6 text-white">Request <span class="italic">Identity</span></h2>
-            <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-6">Real names are never stored in the vault</p>
+            <h2 class="serif text-3xl mb-6 text-white">Secure <span class="italic">Inquiry</span></h2>
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-6">256-Bit SSL Encrypted Session</p>
             <div class="space-y-4">
-                <input x-model="alias" type="text" placeholder="Alias (e.g. Tiger, Guest01)" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white outline-none focus:border-[#c5a059]">
-                <input x-model="contact" type="text" placeholder="Encrypted WhatsApp / Telegram" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white outline-none focus:border-[#c5a059]">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">🔒</span>
+                    <input x-model="alias" type="text" placeholder="Alias (e.g. Tiger, Guest01)" class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-6 py-4 text-white outline-none focus:border-[#c5a059]">
+                </div>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">🔒</span>
+                    <input x-model="contact" type="text" placeholder="Secure WhatsApp / Telegram" class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-6 py-4 text-white outline-none focus:border-[#c5a059]">
+                </div>
                 <button @click="
                     fetch('/api/reserve', {
                         method: 'POST',
@@ -123,7 +131,7 @@
                         bookingModal = false;
                         successModal = true;
                     })
-                " class="w-full py-5 bg-gradient-to-r from-[#c5a059] to-[#f1d392] text-black font-bold rounded-xl uppercase tracking-widest text-xs">Generate Encrypted Pass</button>
+                " class="w-full py-5 bg-gradient-to-r from-[#c5a059] to-[#f1d392] text-black font-bold rounded-xl uppercase tracking-widest text-xs">Initialize Encrypted Pass</button>
             </div>
         </div>
     </div>
