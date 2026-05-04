@@ -183,26 +183,44 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-// --- ADMIN TOOL: ADD A NEW COMPANION ---
-// Usage: Open your browser to /admin/add-boy?name=Aryan&age=24&height=6ft&specialty=Social Excellence&imageUrl=IMAGE_URL
-app.get('/admin/add-boy', async (req, res) => {
+
+// --- SMART ADMIN TOOL: ADD OR UPDATE COMPANION ---
+// Usage: /admin/manage-boy?name=Aryan&age=25&height=6ft&specialty=Elite&imageUrl=URL
+app.get('/admin/manage-boy', async (req, res) => {
     try {
         const { name, age, height, specialty, imageUrl } = req.query;
-        
-        const newBoy = new Companion({
-            name,
-            age,
-            height,
-            specialty,
-            imageUrl: imageUrl || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop'
-        });
 
-        await newBoy.save();
-        res.send(`<h1>Success</h1><p>${name} has been added to the Elite Roster.</p><a href="/admin/vault">Back to Vault</a>`);
+        if (!name) return res.status(400).send("Name is required to update or add a profile.");
+
+        // Handle URL duplicate/array errors by taking the first value
+        const cleanData = (val) => Array.isArray(val) ? val[0] : val;
+
+        const updateData = {
+            name: cleanData(name),
+            age: age ? parseInt(cleanData(age)) : undefined,
+            height: cleanData(height),
+            specialty: cleanData(specialty),
+            imageUrl: cleanData(imageUrl),
+            isAvailable: true
+        };
+
+        // Remove undefined fields to avoid overwriting with blank data
+        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+        // findOneAndUpdate with 'upsert: true' creates the profile if it doesn't exist, 
+        // or updates it if the name matches.
+        const boy = await Companion.findOneAndUpdate(
+            { name: cleanData(name) }, 
+            updateData, 
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+
+        res.send(`<h1>Success</h1><p>${boy.name}'s profile has been updated in the Vault.</p><a href="/admin/vault">Back to Vault</a>`);
     } catch (error) {
-        res.status(500).send("Error adding profile: " + error.message);
+        res.status(500).send("Update Error: " + error.message);
     }
 });
+
 app.listen(PORT, () => {
     console.log(`VIBE & CO. Live on port ${PORT}`);
 });
