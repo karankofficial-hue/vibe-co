@@ -41,6 +41,21 @@ const CompanionSchema = new mongoose.Schema({
 });
 const Companion = mongoose.model('Companion', CompanionSchema);
 
+// Route to serve the Gallery page
+app.get('/vault-access', (req, res) => {
+    res.sendFile(__dirname + '/public/gallery.html');
+});
+
+// API to get the companions from the database
+app.get('/api/companions', async (req, res) => {
+    try {
+        const boys = await Companion.find({ isAvailable: true });
+        res.json(boys);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // --- AUTH & RESERVATION ROUTES ---
 
 app.post('/api/signup', async (req, res) => {
@@ -168,6 +183,26 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+// --- ADMIN TOOL: ADD A NEW COMPANION ---
+// Usage: Open your browser to /admin/add-boy?name=Aryan&age=24&height=6ft&specialty=Social Excellence&imageUrl=IMAGE_URL
+app.get('/admin/add-boy', async (req, res) => {
+    try {
+        const { name, age, height, specialty, imageUrl } = req.query;
+        
+        const newBoy = new Companion({
+            name,
+            age,
+            height,
+            specialty,
+            imageUrl: imageUrl || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop'
+        });
+
+        await newBoy.save();
+        res.send(`<h1>Success</h1><p>${name} has been added to the Elite Roster.</p><a href="/admin/vault">Back to Vault</a>`);
+    } catch (error) {
+        res.status(500).send("Error adding profile: " + error.message);
+    }
+});
 app.listen(PORT, () => {
     console.log(`VIBE & CO. Live on port ${PORT}`);
 });
