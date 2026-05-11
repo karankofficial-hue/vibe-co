@@ -79,6 +79,14 @@ app.post('/api/reset-password/:id', async (req, res) => {
     catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// NEW: Delete Staff Route
+app.delete('/api/delete-staff/:id', async (req, res) => {
+    try {
+        await Companion.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.get('/admin/vault', async (req, res) => {
     const bookings = await Booking.find().sort({ createdAt: -1 });
     const members = await User.find().sort({ createdAt: -1 });
@@ -95,7 +103,8 @@ app.get('/admin/vault', async (req, res) => {
             table { width: 100%; border-collapse: collapse; margin-top: 20px; background: rgba(255,255,255,0.02); }
             th, td { border: 1px solid rgba(197, 160, 89, 0.3); padding: 15px; text-align: left; }
             th { background: #c5a059; color: black; text-transform: uppercase; font-size: 12px; }
-            .btn { background: #c5a059; color: black; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 10px; text-decoration:none; }
+            .btn { background: #c5a059; color: black; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 10px; text-decoration:none; margin-right: 5px; }
+            .btn-delete { background: #ef4444; color: white; }
             .staff-img { width: 80px; height: 110px; border-radius: 4px; border: 1px solid #c5a059; object-fit: cover; background: #1a1a1a; }
             .notes-cell { color: #9ca3af; font-style: italic; max-width: 250px; word-wrap: break-word; }
             .timestamp { color: #c5a059; font-size: 11px; font-weight: bold; }
@@ -106,13 +115,16 @@ app.get('/admin/vault', async (req, res) => {
 
         <h2>Active Roster (Staff)</h2>
         <table>
-            <tr><th>Photo</th><th>Name</th><th>Details</th><th>Action</th></tr>`;
+            <tr><th>Photo</th><th>Name</th><th>Details</th><th>Actions</th></tr>`;
     staff.forEach(s => {
         html += `<tr>
             <td><img src="${s.imageUrl}" class="staff-img" onerror="this.src='https://via.placeholder.com/80x110?text=No+Image'"></td>
             <td><b>${s.name}</b></td>
             <td>${s.age || '24'} yrs | ${s.height || '6ft'} | ${s.specialty || 'Elite'}</td>
-            <td><button class="btn" onclick="updatePhoto('${s.name}')">UPDATE PHOTO</button></td>
+            <td>
+                <button class="btn" onclick="updatePhoto('${s.name}')">PHOTO</button>
+                <button class="btn btn-delete" onclick="deleteStaff('${s._id}', '${s.name}')">DELETE</button>
+            </td>
         </tr>`;
     });
     html += `</table>
@@ -125,7 +137,7 @@ app.get('/admin/vault', async (req, res) => {
             <td>${m.email}</td>
             <td>${m.isApproved ? '<span style="color:#22c55e">APPROVED</span>' : 'PENDING'}</td>
             <td>${!m.isApproved ? `<button class="btn" onclick="approveUser('${m._id}')">APPROVE</button>` : 'Authorized'}</td>
-            <td><button class="btn" style="background:#ef4444;" onclick="resetPassword('${m._id}')">RESET PW</button></td>
+            <td><button class="btn btn-delete" onclick="resetPassword('${m._id}')">RESET PW</button></td>
         </tr>`;
     });
     html += `</table>
@@ -134,15 +146,8 @@ app.get('/admin/vault', async (req, res) => {
         <table>
             <tr><th>Date & Time</th><th>Alias</th><th>Contact</th><th>Curation Notes</th><th>Tag</th></tr>`;
     bookings.forEach(b => {
-        // Format the Date and Time specifically for India Standard Time
         const d = new Date(b.createdAt);
-        const timeStr = d.toLocaleString('en-IN', { 
-            day: '2-digit', 
-            month: 'short', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: true 
-        });
+        const timeStr = d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true });
 
         html += `<tr>
             <td class="timestamp">${timeStr}</td>
@@ -157,9 +162,17 @@ app.get('/admin/vault', async (req, res) => {
     <script>
         async function approveUser(id) { await fetch('/api/approve/' + id, { method: 'POST' }); location.reload(); }
         async function resetPassword(id) { if(confirm("Reset to 123456?")) { await fetch('/api/reset-password/' + id, { method: 'POST' }); alert('Done'); } }
+        
         function updatePhoto(name) {
             const url = prompt("Paste Direct Image Link (must end in .jpg or .png):");
             if(url) window.location.href = "/admin/manage-boy?name=" + name + "&imageUrl=" + url;
+        }
+
+        async function deleteStaff(id, name) {
+            if(confirm("Are you sure you want to delete " + name + " from the roster?")) {
+                const res = await fetch('/api/delete-staff/' + id, { method: 'DELETE' });
+                if(res.ok) location.reload();
+            }
         }
     </script>
     </body></html>`;
