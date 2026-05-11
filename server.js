@@ -112,6 +112,16 @@ app.post('/api/approve/:id', async (req, res) => {
     }
 });
 
+// NEW: Password Reset Route
+app.post('/api/reset-password/:id', async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.params.id, { password: '123456' });
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/admin/vault', async (req, res) => {
     const bookings = await Booking.find().sort({ createdAt: -1 });
     const members = await User.find().sort({ createdAt: -1 });
@@ -139,13 +149,14 @@ app.get('/admin/vault', async (req, res) => {
 
         <h2>Member Access Requests</h2>
         <table>
-            <tr><th>Email</th><th>Status</th><th>Action</th></tr>`;
+            <tr><th>Email</th><th>Status</th><th>Access Action</th><th>Security</th></tr>`;
 
     members.forEach(m => {
         html += `<tr>
             <td>${m.email}</td>
             <td class="${m.isApproved ? 'status-approved' : 'status-pending'}">${m.isApproved ? 'APPROVED' : 'PENDING'}</td>
             <td>${!m.isApproved ? `<button class="approve-btn" onclick="approveUser('${m._id}')">APPROVE ACCESS</button>` : 'Authorized'}</td>
+            <td><button class="approve-btn" style="background: #ef4444;" onclick="resetPassword('${m._id}')">RESET PW</button></td>
         </tr>`;
     });
 
@@ -173,6 +184,13 @@ app.get('/admin/vault', async (req, res) => {
             const res = await fetch('/api/approve/' + id, { method: 'POST' });
             if (res.ok) location.reload();
         }
+
+        async function resetPassword(id) {
+            if(confirm("Reset this user's password to '123456'?")) {
+                const res = await fetch('/api/reset-password/' + id, { method: 'POST' });
+                if (res.ok) alert("Password has been reset to: 123456");
+            }
+        }
     </script>
     </body></html>`;
     res.send(html);
@@ -184,17 +202,11 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-// --- SMART ADMIN TOOL: ADD OR UPDATE COMPANION ---
-// Usage: /admin/manage-boy?name=Aryan&age=25&height=6ft&specialty=Elite&imageUrl=URL
 app.get('/admin/manage-boy', async (req, res) => {
     try {
         const { name, age, height, specialty, imageUrl } = req.query;
-
         if (!name) return res.status(400).send("Name is required to update or add a profile.");
-
-        // Handle URL duplicate/array errors by taking the first value
         const cleanData = (val) => Array.isArray(val) ? val[0] : val;
-
         const updateData = {
             name: cleanData(name),
             age: age ? parseInt(cleanData(age)) : undefined,
@@ -203,18 +215,12 @@ app.get('/admin/manage-boy', async (req, res) => {
             imageUrl: cleanData(imageUrl),
             isAvailable: true
         };
-
-        // Remove undefined fields to avoid overwriting with blank data
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-
-        // findOneAndUpdate with 'upsert: true' creates the profile if it doesn't exist, 
-        // or updates it if the name matches.
         const boy = await Companion.findOneAndUpdate(
             { name: cleanData(name) }, 
             updateData, 
             { upsert: true, new: true, setDefaultsOnInsert: true }
         );
-
         res.send(`<h1>Success</h1><p>${boy.name}'s profile has been updated in the Vault.</p><a href="/admin/vault">Back to Vault</a>`);
     } catch (error) {
         res.status(500).send("Update Error: " + error.message);
