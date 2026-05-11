@@ -97,6 +97,8 @@ app.get('/admin/vault', async (req, res) => {
             th { background: #c5a059; color: black; text-transform: uppercase; font-size: 12px; }
             .btn { background: #c5a059; color: black; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 10px; text-decoration:none; }
             .staff-img { width: 80px; height: 110px; border-radius: 4px; border: 1px solid #c5a059; object-fit: cover; background: #1a1a1a; }
+            .notes-cell { color: #9ca3af; font-style: italic; max-width: 250px; word-wrap: break-word; }
+            .timestamp { color: #c5a059; font-size: 11px; font-weight: bold; }
         </style>
     </head>
     <body>
@@ -109,7 +111,7 @@ app.get('/admin/vault', async (req, res) => {
         html += `<tr>
             <td><img src="${s.imageUrl}" class="staff-img" onerror="this.src='https://via.placeholder.com/80x110?text=No+Image'"></td>
             <td><b>${s.name}</b></td>
-            <td>${s.age || '??'} yrs | ${s.height || 'N/A'} | ${s.specialty || 'Elite'}</td>
+            <td>${s.age || '24'} yrs | ${s.height || '6ft'} | ${s.specialty || 'Elite'}</td>
             <td><button class="btn" onclick="updatePhoto('${s.name}')">UPDATE PHOTO</button></td>
         </tr>`;
     });
@@ -128,11 +130,27 @@ app.get('/admin/vault', async (req, res) => {
     });
     html += `</table>
 
-        <h2>Secure Bookings</h2>
+        <h2>Secure Booking Records</h2>
         <table>
-            <tr><th>Alias</th><th>Contact</th><th>Tag</th></tr>`;
+            <tr><th>Date & Time</th><th>Alias</th><th>Contact</th><th>Curation Notes</th><th>Tag</th></tr>`;
     bookings.forEach(b => {
-        html += `<tr><td>${b.alias}</td><td>${b.contact}</td><td style="color:#c5a059; font-weight:bold">${b.ngfTag}</td></tr>`;
+        // Format the Date and Time specifically for India Standard Time
+        const d = new Date(b.createdAt);
+        const timeStr = d.toLocaleString('en-IN', { 
+            day: '2-digit', 
+            month: 'short', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true 
+        });
+
+        html += `<tr>
+            <td class="timestamp">${timeStr}</td>
+            <td>${b.alias || 'N/A'}</td>
+            <td>${b.contact || 'N/A'}</td>
+            <td class="notes-cell">${b.notes || 'No extra requirements'}</td>
+            <td style="color:#c5a059; font-weight:bold">${b.ngfTag}</td>
+        </tr>`;
     });
     html += `</table>
 
