@@ -26,6 +26,7 @@ const Booking = mongoose.model('Booking', BookingSchema);
 const UserSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true }, 
+    profilePic: { type: String, default: 'https://i.ibb.co/68Xk9wN4/IMG-5643.jpg' }, // Default luxury placeholder
     isApproved: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
@@ -112,7 +113,6 @@ app.post('/api/approve/:id', async (req, res) => {
     }
 });
 
-// NEW: Password Reset Route
 app.post('/api/reset-password/:id', async (req, res) => {
     try {
         await User.findByIdAndUpdate(req.params.id, { password: '123456' });
@@ -149,10 +149,13 @@ app.get('/admin/vault', async (req, res) => {
 
         <h2>Member Access Requests</h2>
         <table>
-            <tr><th>Email</th><th>Status</th><th>Access Action</th><th>Security</th></tr>`;
+            <tr><th>Photo</th><th>Email</th><th>Status</th><th>Access Action</th><th>Security</th></tr>`;
 
     members.forEach(m => {
         html += `<tr>
+            <td>
+                <img src="${m.profilePic}" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #c5a059; object-fit: cover;">
+            </td>
             <td>${m.email}</td>
             <td class="${m.isApproved ? 'status-approved' : 'status-pending'}">${m.isApproved ? 'APPROVED' : 'PENDING'}</td>
             <td>${!m.isApproved ? `<button class="approve-btn" onclick="approveUser('${m._id}')">APPROVE ACCESS</button>` : 'Authorized'}</td>
@@ -224,6 +227,18 @@ app.get('/admin/manage-boy', async (req, res) => {
         res.send(`<h1>Success</h1><p>${boy.name}'s profile has been updated in the Vault.</p><a href="/admin/vault">Back to Vault</a>`);
     } catch (error) {
         res.status(500).send("Update Error: " + error.message);
+    }
+});
+
+// NEW: Update Member Photo Route
+app.get('/admin/update-member-photo', async (req, res) => {
+    try {
+        const { email, picUrl } = req.query;
+        if (!email || !picUrl) return res.status(400).send("Email and picUrl are required.");
+        await User.findOneAndUpdate({ email: email }, { profilePic: picUrl });
+        res.send(`<h1>Success</h1><p>Photo updated for ${email}</p><a href="/admin/vault">Back to Vault</a>`);
+    } catch (error) {
+        res.status(500).send("Error: " + error.message);
     }
 });
 
