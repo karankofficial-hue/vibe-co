@@ -22,7 +22,6 @@ const Booking = mongoose.model('Booking', BookingSchema);
 const UserSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true }, 
-    profilePic: { type: String, default: 'https://i.ibb.co/68Xk9wN4/IMG-5643.jpg' }, 
     isApproved: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
@@ -45,18 +44,17 @@ app.get('/api/companions', async (req, res) => {
 app.post('/api/signup', async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (await User.findOne({ email })) return res.status(400).json({ success: false, message: "In Vault" });
+        if (await User.findOne({ email })) return res.status(400).json({ success: false });
         await new User({ email, password }).save();
-        res.json({ success: true, message: "Awaiting approval." });
-    } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email, password });
-        if (!user) return res.status(401).json({ success: false });
-        if (!user.isApproved) return res.status(403).json({ success: false });
+        if (!user || !user.isApproved) return res.status(401).json({ success: false });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
@@ -93,12 +91,12 @@ app.get('/admin/vault', async (req, res) => {
         <style>
             body { background: #0a0e14; color: white; font-family: sans-serif; padding: 40px; }
             h1 { font-family: serif; color: #c5a059; border-bottom: 1px solid #c5a059; padding-bottom: 10px; }
-            h2 { margin-top: 50px; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; color: #9ca3af; }
+            h2 { margin-top: 50px; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; color: #9ca3af; }
             table { width: 100%; border-collapse: collapse; margin-top: 20px; background: rgba(255,255,255,0.02); }
             th, td { border: 1px solid rgba(197, 160, 89, 0.3); padding: 15px; text-align: left; }
             th { background: #c5a059; color: black; text-transform: uppercase; font-size: 12px; }
             .btn { background: #c5a059; color: black; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 10px; text-decoration:none; }
-            img { border-radius: 8px; border: 1px solid #c5a059; object-fit: cover; }
+            .staff-img { width: 80px; height: 110px; border-radius: 4px; border: 1px solid #c5a059; object-fit: cover; background: #1a1a1a; }
         </style>
     </head>
     <body>
@@ -109,9 +107,9 @@ app.get('/admin/vault', async (req, res) => {
             <tr><th>Photo</th><th>Name</th><th>Details</th><th>Action</th></tr>`;
     staff.forEach(s => {
         html += `<tr>
-            <td><img src="${s.imageUrl}" width="60" height="80"></td>
+            <td><img src="${s.imageUrl}" class="staff-img" onerror="this.src='https://via.placeholder.com/80x110?text=No+Image'"></td>
             <td><b>${s.name}</b></td>
-            <td>${s.age} yrs | ${s.height} | ${s.specialty}</td>
+            <td>${s.age || '??'} yrs | ${s.height || 'N/A'} | ${s.specialty || 'Elite'}</td>
             <td><button class="btn" onclick="updatePhoto('${s.name}')">UPDATE PHOTO</button></td>
         </tr>`;
     });
@@ -119,12 +117,11 @@ app.get('/admin/vault', async (req, res) => {
 
         <h2>Member Access Requests</h2>
         <table>
-            <tr><th>Photo</th><th>Email</th><th>Status</th><th>Access</th><th>Security</th></tr>`;
+            <tr><th>Email</th><th>Status</th><th>Access</th><th>Security</th></tr>`;
     members.forEach(m => {
         html += `<tr>
-            <td><img src="${m.profilePic}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></td>
             <td>${m.email}</td>
-            <td>${m.isApproved ? 'APPROVED' : 'PENDING'}</td>
+            <td>${m.isApproved ? '<span style="color:#22c55e">APPROVED</span>' : 'PENDING'}</td>
             <td>${!m.isApproved ? `<button class="btn" onclick="approveUser('${m._id}')">APPROVE</button>` : 'Authorized'}</td>
             <td><button class="btn" style="background:#ef4444;" onclick="resetPassword('${m._id}')">RESET PW</button></td>
         </tr>`;
@@ -135,7 +132,7 @@ app.get('/admin/vault', async (req, res) => {
         <table>
             <tr><th>Alias</th><th>Contact</th><th>Tag</th></tr>`;
     bookings.forEach(b => {
-        html += `<tr><td>${b.alias}</td><td>${b.contact}</td><td style="color:#c5a059">${b.ngfTag}</td></tr>`;
+        html += `<tr><td>${b.alias}</td><td>${b.contact}</td><td style="color:#c5a059; font-weight:bold">${b.ngfTag}</td></tr>`;
     });
     html += `</table>
 
@@ -143,7 +140,7 @@ app.get('/admin/vault', async (req, res) => {
         async function approveUser(id) { await fetch('/api/approve/' + id, { method: 'POST' }); location.reload(); }
         async function resetPassword(id) { if(confirm("Reset to 123456?")) { await fetch('/api/reset-password/' + id, { method: 'POST' }); alert('Done'); } }
         function updatePhoto(name) {
-            const url = prompt("Enter Direct Image URL for " + name);
+            const url = prompt("Paste Direct Image Link (must end in .jpg or .png):");
             if(url) window.location.href = "/admin/manage-boy?name=" + name + "&imageUrl=" + url;
         }
     </script>
@@ -161,15 +158,6 @@ app.get('/admin/manage-boy', async (req, res) => {
     } catch (e) { res.status(500).send(e.message); }
 });
 
-app.get('/admin/update-member-photo', async (req, res) => {
-    try {
-        const { email, picUrl } = req.query;
-        await User.findOneAndUpdate({ email }, { profilePic: picUrl });
-        res.redirect('/admin/vault');
-    } catch (e) { res.status(500).send(e.message); }
-});
-
 app.get('/', (req, res) => res.sendFile(__dirname + '/public/index.html'));
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`VIBE & CO. Live on port ${PORT}`));
+app.listen(PORT, () => console.log(`VIBE & CO. Live on ${PORT}`));
